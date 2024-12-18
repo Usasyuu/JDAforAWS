@@ -2,6 +2,7 @@ package awsForDiscordOnJava;
 
 import java.io.IOException;
 import java.io.FileOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
@@ -17,8 +18,14 @@ public class Property {
 	private FileInputStream istream;
 
 	public Property() {
+		Boolean os = File.separatorChar == '\\';
 		folderPath = Paths.get("").toAbsolutePath();
-		path = Paths.get(folderPath + "\\" + "settings.properties");
+		if(os) {
+			path = Paths.get(folderPath + "\\" + "settings.properties");
+		} else {
+			path = Paths.get(folderPath + "/" + "settings.properties");
+		}
+		
 		if(!Files.exists(path)) {
 			System.out.println("Make Properties File.");
 			makeProperties();

@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>home.usami</groupId>
 	<artifactId>awsForDiscordOnJava</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.2</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

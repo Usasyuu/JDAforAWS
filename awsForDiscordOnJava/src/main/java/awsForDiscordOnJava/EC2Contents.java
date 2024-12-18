@@ -27,10 +27,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class EC2Contents extends AWSContents {
 	private Ec2Client ec2;
 	private ObjectMapper mapper = new ObjectMapper();
-	private final String jsonFile = Property.getPath().toString() + "\\instanceList.json";
+	private String jsonFile;
 	
 	public EC2Contents(String path){
 		super(path);
+		if (File.separatorChar == '\\') {
+			jsonFile = Property.getPath().toString() + "\\instanceList.json";
+		} else {
+			jsonFile = Property.getPath().toString() + "/instanceList.json";
+		}
 		try {
 			System.out.println("EC2 Startup...");
 			ec2 = Ec2Client.builder()

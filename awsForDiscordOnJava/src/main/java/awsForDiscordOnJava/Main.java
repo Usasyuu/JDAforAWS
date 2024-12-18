@@ -1,14 +1,15 @@
 package awsForDiscordOnJava;
 
 import java.awt.Color;
-import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -26,7 +27,7 @@ class Reload extends Thread {
 	public void run() {
 		while (true) {
 			try {
-				Thread.sleep(5000);
+				sleep(5000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -38,14 +39,21 @@ class Reload extends Thread {
 public class Main {
 	private static EC2Contents aws;
 	private static JDA jda;
+	private static final String version = "v1.0.2";
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) {
+		if (args.length == 0) {
+		} else if (args[0].equals("version")) {
+			System.out.println(version);
+			System.exit(1);
+		}
+		Scanner sc = new Scanner(System.in);
 		Property property = new Property();
 		aws = new EC2Contents(property.getPropertyPath().toString());
-		Scanner sc = new Scanner(System.in);
 		try {
 			jda = JDABuilder.createDefault(property.getProperty("BOT_TOKEN"))
 					.setActivity(Activity.customStatus("コマンドを待機中"))
+					.setStatus(OnlineStatus.DO_NOT_DISTURB)
 					.build().awaitReady();
 			new SlashCommands(jda, Long.valueOf(property.getProperty("GUILD_ID")));
 			eventListener();
@@ -56,14 +64,13 @@ public class Main {
 		property = null;
 		new Reload(aws).start();
 		System.out.println("起動完了！");
-		System.out.println("exitと入力すると終了します。");
-		switch (sc.next()) {
-		case "exit": {
-			aws = null;
-			jda = null;
+		System.out.println("exitで終了できます。");
+		jda.getPresence().setStatus(OnlineStatus.ONLINE);
+		if(sc.next().equals("exit")) {
+			System.out.println("終了します。");
 			sc.close();
+			jda.shutdown();
 			System.exit(1);
-		}
 		}
 
 	}
@@ -92,8 +99,9 @@ public class Main {
 				default: {
 					errorEmbed("指定されたコマンドが見つかりませんでした。", event);
 				}
-
 				}
+				jda.getPresence().setStatus(OnlineStatus.ONLINE);
+				jda.getPresence().setActivity(Activity.customStatus("コマンドを待機中"));
 			}
 
 			@Override
@@ -112,7 +120,7 @@ public class Main {
 						if (instanceName.toLowerCase()
 								.startsWith(event.getFocusedOption().getValue().toLowerCase())) {
 							choices.add(new Command.Choice(instanceName, instanceName));
-							System.out.println("[AutoComplete]" + event.getUser() + ":" + instanceName);
+							System.out.println("[AutoComplete]\s" + event.getUser() + ":" + instanceName);
 						}
 					}
 					event.replyChoices(choices).queue();
@@ -122,8 +130,8 @@ public class Main {
 	}
 
 	private static void start(SlashCommandInteractionEvent event) {
-		event.deferReply().queue();
 		String name = event.getOption("name").getAsString();
+		jda.getPresence().setActivity(Activity.customStatus(name + "を起動中"));
 		System.out.println("start:" + name);
 		String instanceState = aws.getAboutInstance(name, "State");
 		EmbedBuilder embed = new EmbedBuilder();
@@ -132,12 +140,12 @@ public class Main {
 			errorEmbed("すでに起動しています。", event);
 			return;
 		}
-		if(aws.startInstance(name)) {
+		if (aws.startInstance(name)) {
 			embed.setColor(Color.green)
-			.setTitle("起動しました！")
-			.setThumbnail("https://usasyuu.github.io/icon/power_symbol-1.png")
-			.addField("Name", name, true)
-			.addField("IPアドレス", aws.getAboutInstance(name, "PublicIpAddress"), true);
+					.setTitle("起動しました！")
+					.setThumbnail("https://usasyuu.github.io/icon/power_symbol-1.png")
+					.addField("Name", name, true)
+					.addField("IPアドレス", aws.getAboutInstance(name, "PublicIpAddress"), true);
 			System.out.println("Success Start:" + name);
 		} else {
 			System.err.println("起動に失敗しました。");
@@ -145,12 +153,12 @@ public class Main {
 			return;
 		}
 		event.getHook().sendMessageEmbeds(embed.build()).queue();
-		
+
 	}
 
 	private static void stop(SlashCommandInteractionEvent event) {
-		event.deferReply().queue();
 		String name = event.getOption("name").getAsString();
+		jda.getPresence().setActivity(Activity.customStatus(name + "を停止中"));
 		System.out.println("stop:" + name);
 		String instanceState = aws.getAboutInstance(name, "State");
 		EmbedBuilder embed = new EmbedBuilder();
@@ -159,11 +167,11 @@ public class Main {
 			errorEmbed("すでに停止しています。", event);
 			return;
 		}
-		if(aws.stopInstance(name)) {
+		if (aws.stopInstance(name)) {
 			embed.setColor(Color.green)
-			.setTitle("停止しました！")
-			.setThumbnail("https://usasyuu.github.io/icon/power_symbolblack.png")
-			.addField("Name", name, true);
+					.setTitle("停止しました！")
+					.setThumbnail("https://usasyuu.github.io/icon/power_symbolblack.png")
+					.addField("Name", name, true);
 			System.out.println("Success Stop:" + name);
 		} else {
 			System.err.println("停止に失敗しました。");
@@ -174,13 +182,11 @@ public class Main {
 	}
 
 	private static void reload(SlashCommandInteractionEvent event) {
-		event.deferReply().queue();
 		aws.reloadInstance();
 		successEmbed("サーバーリストを再読み込みしました！", event);
 	}
 
 	private static void getList(SlashCommandInteractionEvent event) {
-		event.deferReply().queue();
 		Iterator<String> list = aws.getInstanceName();
 		EmbedBuilder embed = new EmbedBuilder();
 		embed.setTitle("サーバーリスト").setColor(Color.GREEN);
@@ -190,8 +196,8 @@ public class Main {
 			if (instance == "discordbot") {
 				continue;
 			}
-			String instanceState = Main.aws.getAboutInstance(instance, "State");
-			String instanceIp = Main.aws.getAboutInstance(instance, "PublicIpAddress");
+			String instanceState = aws.getAboutInstance(instance, "State");
+			String instanceIp = aws.getAboutInstance(instance, "PublicIpAddress");
 			switch (instanceState) {
 			case "RUNNING":
 				instanceState = "オンライン";
@@ -227,6 +233,8 @@ public class Main {
 	}
 
 	private static String getCommand(SlashCommandInteractionEvent event) {
+		jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
+		event.deferReply().queue();
 		String commandName = event.getName();
 		System.out.println(commandName + "Command" + "\s" + event.getUser());
 		return commandName;
