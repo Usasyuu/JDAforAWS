@@ -39,7 +39,7 @@ class Reload extends Thread {
 public class Main {
 	private static EC2Controller aws;
 	private static JDA jda;
-	private static final String version = "v1.0.2";
+	private static final String version = "v1.1.1";
 
 	public static void main(String[] args) {
 		if (args.length != 0) {
@@ -147,6 +147,11 @@ public class Main {
 		System.out.println("start:" + name);
 		String instanceState = aws.getAboutInstance(name, "State");
 		EmbedBuilder embed = new EmbedBuilder();
+		if(instanceState.equals(instanceState)) {
+			System.err.println("存在しません。");
+			errorEmbed("存在しないインスタンスです。", event);
+			return;
+		}
 		if (instanceState.equals("RUNNING")) {
 			System.err.println("すでに起動しています。");
 			errorEmbed("すでに起動しています。", event);
@@ -174,6 +179,11 @@ public class Main {
 		System.out.println("stop:" + name);
 		String instanceState = aws.getAboutInstance(name, "State");
 		EmbedBuilder embed = new EmbedBuilder();
+		if(instanceState.equals(instanceState)) {
+			System.err.println("存在しません。");
+			errorEmbed("存在しないインスタンスです。", event);
+			return;
+		}
 		if (instanceState.equals("STOPPED")) {
 			System.err.println("すでに停止しています。");
 			errorEmbed("すでに停止しています。", event);

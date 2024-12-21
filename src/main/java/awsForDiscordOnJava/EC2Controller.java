@@ -113,9 +113,14 @@ public class EC2Controller extends AWSContents {
 			root = mapper.readTree(jsonFile);
 			String instanceId = root.get("instances").get(instanceName).get(0).get(type).asText();
 			return instanceId;
-		} catch (IOException e) {
-			return "見つかりませんでした。";
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			return "error";
 		}
+		catch (IOException e) {
+			e.printStackTrace();
+			return "notfound";
+		} 
 	}
 	
 	public Iterator<String> getInstanceName() {
