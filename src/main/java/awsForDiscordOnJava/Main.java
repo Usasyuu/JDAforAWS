@@ -147,7 +147,7 @@ public class Main {
 		System.out.println("start:" + name);
 		String instanceState = aws.getAboutInstance(name, "State");
 		EmbedBuilder embed = new EmbedBuilder();
-		if(instanceState.equals(instanceState)) {
+		if(instanceState.equals("error")) {
 			System.err.println("存在しません。");
 			errorEmbed("存在しないインスタンスです。", event);
 			return;
@@ -179,7 +179,7 @@ public class Main {
 		System.out.println("stop:" + name);
 		String instanceState = aws.getAboutInstance(name, "State");
 		EmbedBuilder embed = new EmbedBuilder();
-		if(instanceState.equals(instanceState)) {
+		if(instanceState.equals("error")) {
 			System.err.println("存在しません。");
 			errorEmbed("存在しないインスタンスです。", event);
 			return;
