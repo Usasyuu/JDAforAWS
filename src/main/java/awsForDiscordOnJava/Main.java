@@ -39,7 +39,7 @@ class Reload extends Thread {
 public class Main {
 	private static EC2Controller aws;
 	private static JDA jda;
-	private static final String version = "v1.1.1";
+	private static final String version = "v1.2.0";
 
 	public static void main(String[] args) {
 		if (args.length != 0) {

@@ -29,6 +29,8 @@ public class Property {
 //		properties.setProperty("Key", "Value");
 		properties.setProperty("AWS_Access_Key", "KEYHERE");
 		properties.setProperty("AWS_Secret_Key", "KEYHERE");
+		properties.setProperty("BOT_TOKEN", "KEYHERE");
+		properties.setProperty("GUILD_ID", "KEYHERE");
 	}
 	
 	private void makeProperty() {
