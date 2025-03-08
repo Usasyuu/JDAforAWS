@@ -1,6 +1,9 @@
 package JDAforAWS;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -28,7 +31,7 @@ class Reload extends Thread {
 	public void run() {
 		while (true) {
 			try {
-				sleep(5000);
+				sleep(3000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -86,6 +89,14 @@ public class Main {
 				System.out.println("終了します。");
 				sc.close();
 				jda.shutdown();
+				if (Files.exists(Paths.get("" + "InstanceList.json"))) {
+					try {
+						Files.delete(Paths.get("" + "InstanceList.json"));
+						
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 				System.exit(1);
 			}
 			}
