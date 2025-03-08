@@ -1,0 +1,14 @@
+{
+  "instances" : {
+    "Terraria" : [ {
+      "PublicIpAddress" : "18.180.231.194",
+      "InstanceId" : "i-085b106b41ce58efc",
+      "State" : "STOPPED"
+    } ],
+    "Hardcore-22" : [ {
+      "PublicIpAddress" : "18.176.87.240",
+      "InstanceId" : "i-06dfcd0f06276f772",
+      "State" : "STOPPED"
+    } ]
+  }
+}
