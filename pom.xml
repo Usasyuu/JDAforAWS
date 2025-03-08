@@ -3,13 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>home.usami</groupId>
-	<artifactId>awsForDiscordOnJava</artifactId>
+	<artifactId>JDAforAWS</artifactId>
 	<version>1.2.0</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>21</java.version>
-		<mainClassPath>${project.artifactId}.Main</mainClassPath>
+		<mainClassPath>${project.groupId}.${project.artifactId}.Main</mainClassPath>
 	</properties>
 
 	<dependencyManagement>
@@ -35,24 +35,25 @@
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>ec2</artifactId>
 		</dependency>
+		<!--https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.18.2</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>2.0.16</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14 -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-nop</artifactId>
-			<version>1.7.7</version>
-		</dependency>
-		<!--
-		https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.18.2</version>
-		</dependency>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>2.0.16</version>
+			<scope>runtime</scope>
+		</dependency> 
 	</dependencies>
 
 	<build>
