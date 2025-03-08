@@ -1,4 +1,4 @@
-package awsForDiscordOnJava;
+package JDAforAWS;
 
 import java.util.ArrayList;
 import java.util.HashMap;

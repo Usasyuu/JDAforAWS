@@ -1,4 +1,4 @@
-package awsForDiscordOnJava;
+package JDAforAWS;
 
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;

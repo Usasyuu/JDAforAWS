@@ -1,4 +1,4 @@
-package awsForDiscordOnJava;
+package JDAforAWS;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

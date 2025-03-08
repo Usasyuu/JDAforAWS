@@ -1,4 +1,4 @@
-package awsForDiscordOnJava;
+package JDAforAWS;
 
 import java.awt.Color;
 import java.util.ArrayList;
