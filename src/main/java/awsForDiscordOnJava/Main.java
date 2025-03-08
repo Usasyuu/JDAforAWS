@@ -33,7 +33,6 @@ class Reload extends Thread {
 				e.printStackTrace();
 			}
 			aws.reloadInstance();
-			System.out.println("Reload InstanceList.json");
 		}
 	}
 }
