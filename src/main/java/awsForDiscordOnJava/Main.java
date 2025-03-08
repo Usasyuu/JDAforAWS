@@ -2,6 +2,7 @@ package awsForDiscordOnJava;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
@@ -32,6 +33,7 @@ class Reload extends Thread {
 				e.printStackTrace();
 			}
 			aws.reloadInstance();
+			System.out.println("Reload InstanceList.json");
 		}
 	}
 }
@@ -39,7 +41,7 @@ class Reload extends Thread {
 public class Main {
 	private static EC2Controller aws;
 	private static JDA jda;
-	private static final String version = "v1.2.0";
+	private static final String version = "v1.2.1";
 
 	public static void main(String[] args) {
 		if (args.length != 0) {
@@ -52,7 +54,9 @@ public class Main {
 		}
 
 		Scanner sc = new Scanner(System.in);
+		System.out.print(getDateTime());
 		Property property = new Property();
+		System.out.print(getDateTime());
 		aws = new EC2Controller(property);
 		try {
 			jda = JDABuilder.createDefault(property.getProperty("BOT_TOKEN"))
@@ -67,9 +71,11 @@ public class Main {
 		}
 		property = null;
 		new Reload(aws).start();
+		System.out.print(getDateTime());
 		System.out.println("起動完了！");
 		jda.getPresence().setStatus(OnlineStatus.ONLINE);
 		while (true) {
+			System.out.print(getDateTime());
 			System.out.println("exitで終了できます。");
 			switch (sc.next()) {
 			case "help": {
@@ -77,6 +83,7 @@ public class Main {
 				break;
 			}
 			case "exit": {
+				System.out.print(getDateTime());
 				System.out.println("終了します。");
 				sc.close();
 				jda.shutdown();
@@ -132,7 +139,6 @@ public class Main {
 						if (instanceName.toLowerCase()
 								.startsWith(event.getFocusedOption().getValue().toLowerCase())) {
 							choices.add(new Command.Choice(instanceName, instanceName));
-							System.out.println("[AutoComplete]\s" + event.getUser() + ":" + instanceName);
 						}
 					}
 					event.replyChoices(choices).queue();
@@ -144,15 +150,18 @@ public class Main {
 	private static void start(SlashCommandInteractionEvent event) {
 		String name = event.getOption("name").getAsString();
 		jda.getPresence().setActivity(Activity.customStatus(name + "を起動中"));
+		System.out.print(getDateTime());
 		System.out.println("start:" + name);
 		String instanceState = aws.getAboutInstance(name, "State");
 		EmbedBuilder embed = new EmbedBuilder();
 		if(instanceState.equals("error")) {
+			System.out.print(getDateTime());
 			System.err.println("存在しません。");
 			errorEmbed("存在しないインスタンスです。", event);
 			return;
 		}
 		if (instanceState.equals("RUNNING")) {
+			System.out.print(getDateTime());
 			System.err.println("すでに起動しています。");
 			errorEmbed("すでに起動しています。", event);
 			return;
@@ -163,8 +172,10 @@ public class Main {
 					.setThumbnail("https://usasyuu.github.io/icon/power_symbol-1.png")
 					.addField("Name", name, true)
 					.addField("IPアドレス", aws.getAboutInstance(name, "PublicIpAddress"), true);
+			System.out.print(getDateTime());
 			System.out.println("Success Start:" + name);
 		} else {
+			System.out.print(getDateTime());
 			System.err.println("起動に失敗しました。");
 			errorEmbed("起動に失敗しました。", event);
 			return;
@@ -176,15 +187,18 @@ public class Main {
 	private static void stop(SlashCommandInteractionEvent event) {
 		String name = event.getOption("name").getAsString();
 		jda.getPresence().setActivity(Activity.customStatus(name + "を停止中"));
+		System.out.print(getDateTime());
 		System.out.println("stop:" + name);
 		String instanceState = aws.getAboutInstance(name, "State");
 		EmbedBuilder embed = new EmbedBuilder();
 		if(instanceState.equals("error")) {
+			System.out.print(getDateTime());
 			System.err.println("存在しません。");
 			errorEmbed("存在しないインスタンスです。", event);
 			return;
 		}
 		if (instanceState.equals("STOPPED")) {
+			System.out.print(getDateTime());
 			System.err.println("すでに停止しています。");
 			errorEmbed("すでに停止しています。", event);
 			return;
@@ -194,8 +208,10 @@ public class Main {
 					.setTitle("停止しました！")
 					.setThumbnail("https://usasyuu.github.io/icon/power_symbolblack.png")
 					.addField("Name", name, true);
+			System.out.print(getDateTime());
 			System.out.println("Success Stop:" + name);
 		} else {
+			System.out.print(getDateTime());
 			System.err.println("停止に失敗しました。");
 			errorEmbed("停止に失敗しました。", event);
 			return;
@@ -221,17 +237,14 @@ public class Main {
 			String instanceState = aws.getAboutInstance(instance, "State");
 			String instanceIp = aws.getAboutInstance(instance, "PublicIpAddress");
 			switch (instanceState) {
-			case "RUNNING":
+			case "RUNNING" ->
 				instanceState = "オンライン";
-				break;
 
-			case "STOPPED":
+			case "STOPPED" ->
 				instanceState = "オフライン";
-				break;
 
-			default:
+			default ->
 				instanceState = "待機中";
-				break;
 			}
 			embed.addField(instance, instanceState + "\n" + instanceIp, true);
 		}
@@ -258,9 +271,25 @@ public class Main {
 		jda.getPresence().setStatus(OnlineStatus.DO_NOT_DISTURB);
 		event.deferReply().queue();
 		String commandName = event.getName();
+		System.out.print(getDateTime());
 		System.out.println(commandName + "Command" + "\s" + event.getUser());
 		return commandName;
-
 	}
 
+	private static String getDateTime() {
+		Calendar clr = Calendar.getInstance();
+
+		String year = String.valueOf(clr.get(Calendar.YEAR));
+		String month = addZero(clr.get(Calendar.MONTH) + 1);
+		String date = addZero(clr.get(Calendar.DATE));
+		String hour = addZero(clr.get(Calendar.HOUR));
+		String minute = addZero(clr.get(Calendar.MINUTE));
+		String second = addZero(clr.get(Calendar.SECOND));
+
+		return year + "-" + month + "-" + date + " " + hour + ":" + minute + ":" + second + " ";
+	}
+
+	private static String addZero(int t) {
+		return t < 10 ? "0" + t : t + "";
+	}
 }
