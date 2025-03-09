@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 
+import home.usami.mcsrvstatus.Mcsrvstatusapi;
+
 class Reload extends Thread {
 	private EC2Controller aws;
 
@@ -43,7 +45,7 @@ class Reload extends Thread {
 public class Main {
 	private static EC2Controller aws;
 	private static JDA jda;
-	private static final String version = "v1.2.1";
+	private static final String version = "v1.3.0";
 
 	public static void main(String[] args) {
 		if (args.length != 0) {
@@ -135,7 +137,9 @@ public class Main {
 
 			@Override
 			public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event) {
-				if (event.getName().equals("start") || event.getName().equals("stop")
+				if (event.getName().equals("start") 
+						|| event.getName().equals("stop") 
+						|| event.getName().equals("mcstatus")
 						&& event.getFocusedOption().getName().equals("name"))
 					;
 				{
@@ -232,6 +236,14 @@ public class Main {
 	private static void reload(SlashCommandInteractionEvent event) {
 		aws.reloadInstance();
 		successEmbed("サーバーリストを再読み込みしました！", event);
+	}
+
+	private static void mcstatus(SlashCommandInteractionEvent event) {
+		String name = event.getOption("name").getAsString();
+		jda.getPresence().setActivity(Activity.customStatus(name + "を確認中"));
+		System.out.print(getDateTime());
+		System.out.println("mcstatus:" + name);
+		Mcsrvstatusapi api = new Mcsrvstatusapi(aws.getAboutInstance(name, "PublicIpAddress"));
 	}
 
 	private static void getList(SlashCommandInteractionEvent event) {

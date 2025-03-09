@@ -27,6 +27,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>home.usami</groupId>
+			<artifactId>mcsrvstatus</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
 			<groupId>net.dv8tion</groupId>
 			<artifactId>JDA</artifactId>
 			<version>5.2.1</version>
