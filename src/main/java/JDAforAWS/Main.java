@@ -127,6 +127,10 @@ public class Main {
 					stop(event);
 					break;
 				}
+				case "status": {
+					mcstatus(event);
+					break;
+				}
 				default: {
 					errorEmbed("指定されたコマンドが見つかりませんでした。", event);
 				}
@@ -243,7 +247,23 @@ public class Main {
 		jda.getPresence().setActivity(Activity.customStatus(name + "を確認中"));
 		System.out.print(getDateTime());
 		System.out.println("mcstatus:" + name);
-		Mcsrvstatusapi api = new Mcsrvstatusapi(aws.getAboutInstance(name, "PublicIpAddress"));
+		Mcsrvstatusapi mcsrv_api = new Mcsrvstatusapi(aws.getAboutInstance(name, "PublicIpAddress"));
+		EmbedBuilder embed = new EmbedBuilder();
+		boolean beOnline = mcsrv_api.beOnline();
+		String beOnline_s;
+		embed = embed.setTitle(name)
+			.addField("IPアドレス", aws.getAboutInstance(name, "PublicIpAddress"), true)
+			.setThumbnail("https://usasyuu.github.io/icon/Minecraft_Downloads.png");
+		if (!beOnline) {
+			beOnline_s = "オフライン";
+			embed.setColor(Color.RED);
+		} else {
+			beOnline_s = "オンライン";
+			embed.setColor(Color.GREEN).setDescription(mcsrv_api.getMOTDclean())
+			.addField("プレイヤー数", String.valueOf(mcsrv_api.getOnlinePlayerNum()) + "/" + String.valueOf(mcsrv_api.getMaxPlayerNum()) , true)
+			.addField("バージョン", mcsrv_api.getMCVersion(), true);
+		}
+		event.getHook().sendMessageEmbeds(embed.build()).queue();
 	}
 
 	private static void getList(SlashCommandInteractionEvent event) {
@@ -276,7 +296,8 @@ public class Main {
 	private static EmbedBuilder successEmbed(String message, SlashCommandInteractionEvent event) {
 		EmbedBuilder embed = new EmbedBuilder()
 				.setColor(Color.green)
-				.addField("Success", message, false);
+				.setTitle("Success")
+				.setDescription(message);
 		event.getHook().sendMessageEmbeds(embed.build()).queue();
 		return embed;
 	}
@@ -284,7 +305,8 @@ public class Main {
 	private static EmbedBuilder errorEmbed(String message, SlashCommandInteractionEvent event) {
 		EmbedBuilder embed = new EmbedBuilder()
 				.setColor(Color.red)
-				.addField("Error", message, false);
+				.setTitle("Error")
+				.setDescription(message);
 		event.getHook().sendMessageEmbeds(embed.build()).queue();
 		return embed;
 	}

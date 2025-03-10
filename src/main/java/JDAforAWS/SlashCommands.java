@@ -26,7 +26,7 @@ public class SlashCommands {
 				Commands.slash("stop", "サーバーを停止します。")
 				.addOption(OptionType.STRING, "name", "サーバーの名前を入力してください。", true, true),
 
-				Commands.slash("mcstatus", "Minecraft Serverの情報を表示します。")
+				Commands.slash("status", "Minecraft Serverの情報を表示します。")
 				.addOption(OptionType.STRING, "name", "サーバーの名前かIPアドレスを入力してください。", true, true)
 				
 				).queue();
